@@ -88,9 +88,43 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     }
 
-    function displayUserData(passedData) {
-      const totalHardQuestions = passedData.data.allQuestionsCount()
+    function updateProgress(solved, total, label, circle) {
+      const progressDegree = (solved/total)*100;
+      circle.style.setProperty("--progress-degree", `${progressDegree}%`);
+      label.textContent = `${solved}/${total}`;
+    }
 
+    function displayUserData(passedData) {
+      const totalQuestions = passedData.data.allQuestionsCount[0].count;
+      const totalEasyQuestions = passedData.data.allQuestionsCount[1].count;
+      const totalMediumQuestions = passedData.data.allQuestionsCount[2].count;
+      const totalHardQuestions = passedData.data.allQuestionsCount[3].count;
+
+      const solvedTotalQuestions = passedData.data.matchedUser.submitStats.acSubmissionNum[0].count;
+      const solvedTotalEasyQuestions = passedData.data.matchedUser.submitStats.acSubmissionNum[1].count;
+      const solvedTotalMediumQuestions = passedData.data.matchedUser.submitStats.acSubmissionNum[2].count;
+      const solvedTotalHardQuestions = passedData.data.matchedUser.submitStats.acSubmissionNum[3].count;
+
+      updateProgress(solvedTotalEasyQuestions, totalEasyQuestions, easyLabel, easyProgressCircle);
+      updateProgress(solvedTotalMediumQuestions, totalMediumQuestions, mediumLabel, mediumProgressCircle);
+      updateProgress(solvedTotalHardQuestions, totalHardQuestions, hardLabel, hardProgressCircle);
+
+      const cardsData = [
+        { label: "Overall Submissions", value: passedData.data.matchedUser.submitStats.totalSubmissionNum[0].count},
+        { label: "Overall Easy Submissions", value: passedData.data.matchedUser.submitStats.totalSubmissionNum[1].count},
+        { label: "Overall Medium Submissions", value: passedData.data.matchedUser.submitStats.totalSubmissionNum[2].count},
+        { label: "Overall Hard Submissions", value: passedData.data.matchedUser.submitStats.totalSubmissionNum[3].count}
+      ];
+
+      console.log("card data", cardsData);
+
+      cardStatsContainer.innerHTML = cardsData.map(
+        data => { 
+          return  `<div class="card">
+            <h4>${data.label}</h4>
+            <p>${data.value}</p>
+            </div>`;
+           }).join("");
     }
     searchButton.addEventListener('click', function() {
         const username = usernameInput.value;
